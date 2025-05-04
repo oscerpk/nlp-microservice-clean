@@ -1,0 +1,7 @@
+torch
+diffusers
+transformers
+Pillow
+grpcio
+grpcio-tools
+gradio

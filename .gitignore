@@ -1,0 +1,14 @@
+
+*.onnx
+*.pth
+*.pt
+*.ckpt
+*.png
+*.jpg
+*.jpeg
+*.mp4
+models/
+outputs/
+venv/
+__pycache__/
+

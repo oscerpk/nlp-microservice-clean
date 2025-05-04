@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package imagegen;
+
+// The image generation request
+message ImageRequest {
+  string prompt = 1;
+}
+
+// The image generation response
+message ImageResponse {
+  string status = 1;
+  string image_path = 2;
+  string message = 3;
+}
+
+// The service definition
+service ImageGenService {
+  rpc GenerateImage (ImageRequest) returns (ImageResponse);
+}

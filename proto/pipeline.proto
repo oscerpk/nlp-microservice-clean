@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+service ImagePipeline {
+  rpc RunPipeline (PipelineRequest) returns (PipelineReply);
+}
+
+message PipelineRequest {
+  string prompt = 1;
+  bytes face_image = 2;
+}
+
+message PipelineReply {
+  bytes result_image = 1;
+  string log = 2;
+}

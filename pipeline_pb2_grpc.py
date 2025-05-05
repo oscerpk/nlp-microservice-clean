@@ -35,7 +35,7 @@ class ImagePipelineStub(object):
             channel: A grpc.Channel.
         """
         self.RunPipeline = channel.unary_unary(
-                '/ImagePipeline/RunPipeline',
+                '/pipeline.ImagePipeline/RunPipeline',
                 request_serializer=pipeline__pb2.PipelineRequest.SerializeToString,
                 response_deserializer=pipeline__pb2.PipelineReply.FromString,
                 _registered_method=True)
@@ -60,9 +60,9 @@ def add_ImagePipelineServicer_to_server(servicer, server):
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'ImagePipeline', rpc_method_handlers)
+            'pipeline.ImagePipeline', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
-    server.add_registered_method_handlers('ImagePipeline', rpc_method_handlers)
+    server.add_registered_method_handlers('pipeline.ImagePipeline', rpc_method_handlers)
 
 
  # This class is part of an EXPERIMENTAL API.
@@ -83,7 +83,7 @@ class ImagePipeline(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/ImagePipeline/RunPipeline',
+            '/pipeline.ImagePipeline/RunPipeline',
             pipeline__pb2.PipelineRequest.SerializeToString,
             pipeline__pb2.PipelineReply.FromString,
             options,

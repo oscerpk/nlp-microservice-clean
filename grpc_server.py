@@ -7,47 +7,79 @@ from generate import generate_image
 from fuse_face import fuse_faces
 from enhance import enhance_image
 
+def load_lines(filename):
+    with open(filename, "r", encoding="utf-8") as f:
+        return [line.strip().lower() for line in f if line.strip()]
+
+def load_text(filename):
+    with open(filename, "r", encoding="utf-8") as f:
+        return f.read().strip()
+
+# 🔐 Load keywords and negative prompt
+BANNED_KEYWORDS = set(load_lines("config/banned_keywords.txt"))
+
+def is_safe_prompt(prompt: str) -> bool:
+    return not any(word in prompt.lower() for word in BANNED_KEYWORDS)
+
 class ImagePipelineServicer(pipeline_pb2_grpc.ImagePipelineServicer):
- def RunPipeline(self, request, context):
-    try:
-        log = ""
+    def RunPipeline(self, request, context):
+        try:
+            log = ""
+            prompt = request.prompt
+            face_bytes = request.face_image
+            face_provided = len(face_bytes) > 0
 
-        prompt = request.prompt
-        face_bytes = request.face_image
-        face_provided = len(face_bytes) > 0
+            # Prompt check
+            if not is_safe_prompt(prompt):
+                return pipeline_pb2.PipelineReply(
+                    status_code=400,
+                    status_message="Blocked: Unsafe NSFW prompt",
+                    log="❌ NSFW prompt blocked.",
+                    result_image=b""
+                )
 
-        log += "🔹 Generating image from prompt...\n"
-        generated_path = generate_image(prompt)
-        log += f"✅ Image generated: {generated_path}\n"
+            # Image generation
+            log += "🔹 Generating image from prompt...\n"
+            generated_path = generate_image(prompt)
+            log += f"✅ Image generated: {generated_path}\n"
 
-        if face_provided:
-            log += "🔹 Saving face image...\n"
-            face_path = "temp_face.jpg"
-            with open(face_path, "wb") as f:
-                f.write(face_bytes)
-            log += "✅ Face image saved.\n"
+            if face_provided:
+                log += "🔹 Saving face image...\n"
+                face_path = "temp_face.jpg"
+                with open(face_path, "wb") as f:
+                    f.write(face_bytes)
+                log += "✅ Face saved.\n"
 
-            log += "🔹 Performing face swap...\n"
-            swapped_path = fuse_faces(generated_path, face_path)
-            log += f"✅ Face swapped: {swapped_path}\n"
-        else:
-            log += "⚠️ No face image provided. Skipping face swap.\n"
-            swapped_path = generated_path
+                log += "🔹 Swapping face...\n"
+                swapped_path = fuse_faces(generated_path, face_path)
+                log += f"✅ Face swapped: {swapped_path}\n"
+            else:
+                log += "⚠️ No face provided. Skipping face swap.\n"
+                swapped_path = generated_path
 
-        log += "🔹 Enhancing image...\n"
-        final_path = enhance_image(swapped_path)
-        log += f"✅ Enhancement complete: {final_path}\n"
+            log += "🔹 Enhancing image...\n"
+            final_path = enhance_image(swapped_path)
+            log += f"✅ Enhanced image: {final_path}\n"
 
-        with open(final_path, "rb") as f:
-            result_bytes = f.read()
+            with open(final_path, "rb") as f:
+                result_bytes = f.read()
 
-        return pipeline_pb2.PipelineReply(result_image=result_bytes, log=log)
+            return pipeline_pb2.PipelineReply(
+                result_image=result_bytes,
+                log=log,
+                status_code=200,
+                status_message="Success"
+            )
 
-    except Exception as e:
-        context.set_details(str(e))
-        context.set_code(grpc.StatusCode.INTERNAL)
-        return pipeline_pb2.PipelineReply()
-
+        except Exception as e:
+            context.set_code(grpc.StatusCode.INTERNAL)
+            context.set_details(str(e))
+            return pipeline_pb2.PipelineReply(
+                result_image=b"",
+                log="❌ Error occurred during processing",
+                status_code=500,
+                status_message=str(e)
+            )
 
 
 def serve():

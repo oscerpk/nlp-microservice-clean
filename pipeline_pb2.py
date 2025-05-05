@@ -24,17 +24,17 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0epipeline.proto\"5\n\x0fPipelineRequest\x12\x0e\n\x06prompt\x18\x01 \x01(\t\x12\x12\n\nface_image\x18\x02 \x01(\x0c\"2\n\rPipelineReply\x12\x14\n\x0cresult_image\x18\x01 \x01(\x0c\x12\x0b\n\x03log\x18\x02 \x01(\t2@\n\rImagePipeline\x12/\n\x0bRunPipeline\x12\x10.PipelineRequest\x1a\x0e.PipelineReplyb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0epipeline.proto\x12\x08pipeline\"5\n\x0fPipelineRequest\x12\x0e\n\x06prompt\x18\x01 \x01(\t\x12\x12\n\nface_image\x18\x02 \x01(\x0c\"_\n\rPipelineReply\x12\x14\n\x0cresult_image\x18\x01 \x01(\x0c\x12\x0b\n\x03log\x18\x02 \x01(\t\x12\x13\n\x0bstatus_code\x18\x03 \x01(\x05\x12\x16\n\x0estatus_message\x18\x04 \x01(\t2R\n\rImagePipeline\x12\x41\n\x0bRunPipeline\x12\x19.pipeline.PipelineRequest\x1a\x17.pipeline.PipelineReplyb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'pipeline_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
-  _globals['_PIPELINEREQUEST']._serialized_start=18
-  _globals['_PIPELINEREQUEST']._serialized_end=71
-  _globals['_PIPELINEREPLY']._serialized_start=73
-  _globals['_PIPELINEREPLY']._serialized_end=123
-  _globals['_IMAGEPIPELINE']._serialized_start=125
-  _globals['_IMAGEPIPELINE']._serialized_end=189
+  _globals['_PIPELINEREQUEST']._serialized_start=28
+  _globals['_PIPELINEREQUEST']._serialized_end=81
+  _globals['_PIPELINEREPLY']._serialized_start=83
+  _globals['_PIPELINEREPLY']._serialized_end=178
+  _globals['_IMAGEPIPELINE']._serialized_start=180
+  _globals['_IMAGEPIPELINE']._serialized_end=262
 # @@protoc_insertion_point(module_scope)

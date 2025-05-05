@@ -37,3 +37,5 @@ def enhance_image(image_path):
         return output_path
     else:
         raise ValueError("❌ Enhancement failed or no face detected.")
+
+

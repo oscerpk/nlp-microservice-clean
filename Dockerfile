@@ -2,13 +2,22 @@ FROM python:3.10-slim
 
 WORKDIR /app
 
-COPY . /app
+# Install system deps
+RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
 
-RUN apt-get update && apt-get install -y libgl1-mesa-glx
+# Install Python dependencies
+RUN pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu \
+    && pip install diffusers transformers safetensors Pillow
 
-RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
+# Copy files
+COPY . .
 
-EXPOSE 50051 7860
+# Make sure output dir exists
+RUN mkdir -p output
+RUN pip install accelerate
 
-CMD ["python", "grpc_server.py"]
+# Set environment so CPU is used
+ENV DOCKER_ENV=1
+
+# Default command: run the generator with sample prompt
+CMD ["python", "generate.py"]
